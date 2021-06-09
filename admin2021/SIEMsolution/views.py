@@ -1,51 +1,124 @@
 #from SIEMsolution.serializers import NewsDocumentSerializer
 from django.shortcuts import render
-from django.db.models import Case, When
+from elasticsearch_dsl import connections
+from elasticsearch_dsl import Search 
+from django.http import  request
+from django_elasticsearch_dsl import Document
+from flask import Flask
 
-from elasticsearch_dsl import Search as DSLSearch
+import json
 
+
+es = connections.create_connection(hosts=['192.168.56.8:9200'])
 
 # Create your views here.
+
+
 def home(request):
-     return render(request, 'index.html')
+    return render(request, 'index.html')
 
 
-# def log(request):
-#      return render(request, 'tables.html')
+
+def log(request):
+    res= es.indices.exists(index='logstash')
+    
+    body = {      "query": {
+                        "match": {
+                               
+                               "hostname" : "apache.com"
+                                }
+                        }
+                }
+    res=es.search(index="logstash", body=body)
+    logs=res["_source"]
+    context= {'data':logs}  
+    return render(request, 'tables.html', context)
 
 
-class search(DSLSearch):
-    def __init__(self, **kwargs):
-        
-        self._model = kwargs.pop('model', None)
-        super(search, self).__init__(**kwargs)
 
-    def _clone(self):
-        s = super(search, self)._clone()
-        s._model = self._model
-        return s
 
-    def to_queryset(self, keep_order=True):
-        """
-        This method return a django queryset from the an elasticsearch result.
-        It cost a query to the sql db.
-        """
-        s = self
+def error(request):
+    return render(request, 'error.html')
 
-        # Do not query again if the es result is already cached
-        if not hasattr(self, '_response'):
-            # We only need the meta fields with the models ids
-            s = self.source(excludes=['*'])
-            s = s.execute()
 
-        pks = [result.meta.id for result in s]
 
-        qs = self._model.objects.filter(pk__in=pks)
+def warning(request):
+    body = {
+                 "from":0,
+                 "size":2,
+                 "query": {
+                        "match": {
+                               "hostname":"apache.com",
+                               "fields": [
+                                   "tag"
+                                   "host", 
+                                   "hostname", 
+                                   "cade"
+                    ] 
+                                }
+                        }
+                }
+    return render(request, 'warning.html')
 
-        if keep_order:
-            preserved_order = Case(
-                *[When(pk=pk, then=pos) for pos, pk in enumerate(pks)]
-            )
-            qs = qs.order_by(preserved_order)
 
-        return render(qs, 'tables.html')
+
+
+def infor(request):
+    return render(request, 'infor.html')
+
+
+def debug(request):
+    return render(request, 'debug.html')
+
+
+def search (request):
+    q = request.GET.get('q')
+    if q:
+        body = { "from":2,
+                 "size":1, "query": { "match": {"host": q }}}
+        log =es.search(index="logstash", body=body)
+    
+    else:    
+        log='no data'
+    return render(request,'tables.html',{'data':log})    
+
+def search_date (request):
+    q = request.GET.get('q')
+    if q:
+        body = { "from":2,
+                 "size":1, "query": { "match": {"date": q }}}
+        log =es.search(index="logstash", body=body)
+    
+    else:    
+        log=''
+    return render(request,'tables.html',{'data':log})    
+
+
+
+
+app = Flask(__name__)
+
+
+
+def search_request(request):
+    search_term = request.GET.get('apache.com')
+    body={
+            "query": {
+                "multi_match" : {
+                    "query": search_term, 
+                    "fields": [
+                        "host", 
+                        "hostname", 
+                        "code"
+                    ] 
+                }
+            }
+        }
+    res = es.search(index="logstash", body=body)
+    return render(request,'results.html',{'data':res})    
+
+
+if __name__ == '__main__':
+    app.secret_key = 'mysecret'
+    app.run(host='0.0.0.0', port=5000)
+

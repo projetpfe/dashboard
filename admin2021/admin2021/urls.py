@@ -21,8 +21,12 @@ from SIEMsolution import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    #path('log/', views.log, name='log'),
-    path('search/', views.search, name='search'),
-    #path('Pub/', views.PublisherDocumentView.as_view({'get': 'list'}))
+    path('log/', views.log, name='log'),
+    path('log/search/', views.search, name='search'),
+    path('log/error/', views.error, name='error'),
+    path('log/warning/', views.warning, name='warning'),
+    path('log/infor/', views.infor, name='infor'),
+    path('log/debug/', views.debug, name='debug'),
+    path('search_request/', views.search_request, name='search_request')
 
 ]

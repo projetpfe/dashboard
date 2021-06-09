@@ -52,6 +52,11 @@ ELASTICSEARCH_DSL={
     },
 }
 
+ES_INDEXES = {
+    'default': [
+        ('logstash'),
+    ]
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

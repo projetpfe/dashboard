@@ -22,7 +22,7 @@
           <th>date</th>
           <th>type</th>
         </tr>
-        { % for log in response %}
+        {% for log in response %}
         <tr>
         
           <td>{{ log.host_id }}</td>
@@ -32,7 +32,7 @@
           <td>{{ log.type }}</td>
          <td align="center"><a href="/blog/{{ article.id }}/remove">[x]</a></td>
        </tr>
-        { % endfor %}
+        {% endfor %}
       </table>
       {% else %}
       <p>No logs available</p>

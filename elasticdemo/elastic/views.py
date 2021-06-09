@@ -3,6 +3,7 @@ from django.http import response , request
 from django.shortcuts import render
 from elasticsearch import Elasticsearch , RequestsHttpConnection
 from django_elasticsearch_dsl import search
+from elasticsearch_dsl import connections
 #from django import pytest
 from django.conf import settings
 from django.db import models
@@ -19,5 +20,12 @@ from django.db import models
 
 # for hit in response:
 #     print("score:", hit.meta.score,"score:", hit.any, hit.timestamp)
-
-   
+es = connections.create_connection(hosts=['192.168.56.8:9200'])
+def search (request):
+    q = request.GET.get('q')
+    if q:
+        log =es.search(index="employee", body = { "query": { "match": {"hostname":"q" }}})
+    elif q:
+        
+        log=''
+    return render(request,'search.html',{'log':log})    

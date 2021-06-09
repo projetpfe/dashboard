@@ -49,9 +49,12 @@ INSTALLED_APPS = [
 
 ELASTICSEARCH_DSL={
     'default': {
-        'hosts': 'sizah@192.168.56.8:9200'
+        'hosts': '192.168.56.8:9200',
+        'username' : 'sizah',
+        'password' : 'sizah'
     },
 }
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

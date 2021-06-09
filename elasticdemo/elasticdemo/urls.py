@@ -21,5 +21,6 @@ from elastic import documents
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', documents.index, name='index'),
+    path('search/', views.search, name='search'),
    
 ]

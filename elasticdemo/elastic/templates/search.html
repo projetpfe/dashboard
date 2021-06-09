@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>One Line Blog</title>
+    <!--<link rel="stylesheet" href="{{ STATIC_URL }}styles/blog.css" type="text/css">-->
+  </head>
+  <body>
+    <div id="header">
+      <h2>One Line Blog</h2>
+    </div> 
+    
+<form method = "get" >
+    <input id ="q" name ="q" type ="text">
+
+</form>
+{% if response %}
+      <table>
+        <tr>
+          
+          <th>host_id</th>
+          <th>host_name</th>
+          <th>start_time</th>
+          <th>date</th>
+          <th>type</th>
+        </tr>
+        {% for log in response %}
+        <tr>
+        
+          <td>{{ log.host_id }}</td>
+          <td>{{ log.host_name }}</td>
+          <td>{{ log.start_time }}</td>
+          <td>{{ log.date }}</td>
+          <td>{{ log.type }}</td>
+       
+       </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p>No logs available</p>
+      {% endif %}
+      </html>
